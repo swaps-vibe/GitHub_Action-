@@ -1,0 +1,35 @@
+name: Phase 2 - Node.js Continuous Integration
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+permissions:
+  contents: read
+
+jobs:
+  test-and-build:
+    runs-on: ubuntu-latest
+
+    steps:
+      # Step 1: Download repository source code
+      - name: Checkout repository code
+        uses: actions/checkout@v4
+
+      # Step 2: Set up Node.js environment
+      - name: Setup Node.js 20
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      # Step 3: Clean install dependencies (requires package.json & package-lock.json)
+      - name: Install dependencies
+        run: npm ci
+
+      # Step 4: Run unit tests with injected secrets
+      - name: Run unit tests
+        env:
+          API_KEY: ${{ secrets.MY_API_KEY }}
+        run: npm test
